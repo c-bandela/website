@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Simple theme">
+<meta name="keywords" content="goa,hugo,teacher">
+
+<base href="../hugo-goa">
+
+<title>
+  Final Project - Project 2: Modeling, Testing, and Predicting 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="../hugo-goa/css/main.css">
+<link rel="stylesheet" href="../hugo-goa/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="../manifest.json">
+<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Project 2: Modeling, Testing, and Predicting</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+       
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<div id="christine-bandela-cmb5726" class="section level2">
+<h2>Christine Bandela cmb5726</h2>
+</div>
+<div id="modeling" class="section level1">
+<h1>Modeling</h1>
+<div id="instructions" class="section level2">
+<h2>Instructions</h2>
+<p>A knitted R Markdown document (as a PDF) and the raw R Markdown file (as .Rmd) should both be submitted to Canvas by 11:59pm on 11/24/2019. These two documents will be graded jointly, so they must be consistent (i.e., don’t change the R Markdown file without also updating the knitted document). Knit an html copy too, for later! In the .Rmd file for Project 2, you can copy the first code-chunk into your project .Rmd file to get better formatting. Notice that you can adjust the opts_chunk$set(…) above to set certain parameters if necessary to make the knitting cleaner (you can globally set the size of all plots, etc). I have gone ahead and set a few for you (such as disabling warnings and package-loading messges when knitting)!</p>
+<p>Like before, I envision your written text forming something of a narrative structure around your code/output. All results presented must have corresponding code. Any answers/results/plots etc. given without the corresponding R code that generated the result will not be graded. Furthermore, all code contained in your final project document should work properly. Please do not include any extraneous code or code which produces error messages. (Code which produces warnings is acceptable, as long as you understand what the warnings mean).</p>
+</div>
+<div id="guidelines-and-rubric" class="section level2">
+<h2>Guidelines and Rubric</h2>
+<ul>
+<li><strong>0. (5 pts)</strong> Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.</li>
+</ul>
+<p><em>For my modeling project, the dataset I will be using is ‘midwest’. This dataset contains information on the demographics of the midwest counties. The variables that will be used are ‘inmetro’, ‘state’, ‘county’, ‘popdensity’, ‘poptotal’ and area.</em></p>
+<ul>
+<li><strong>1. (15 pts)</strong> Perform a MANOVA testing whether any of your numeric variables (or a subset of them, if including them all doesn’t make sense) show a mean difference across levels of one of your categorical variables (3). If they do, perform univariate ANOVAs to find response(s) showing a mean difference across groups (3), and perform post-hoc t tests to find which groups differ (3). Discuss the number of tests you have performed, calculate the probability of at least one type I error (if unadjusted), and adjust the significance level accordingly (bonferroni correction) before discussing significant differences (3). Briefly discuss assumptions and whether or not they are likely to have been met (2).</li>
+</ul>
+<pre class="r"><code>library(tidyverse)
+library(ggplot2)
+library(&quot;dplyr&quot;, lib.loc=&quot;~/R/x86_64-pc-linux-gnu-library/3.4&quot;)
+library(gridExtra)
+ggplot(midwest, aes(x = poptotal, y = popdensity)) +
+  geom_point(alpha = .5) + geom_density_2d(h=3) + coord_fixed() + facet_wrap(~state)</code></pre>
+<p><img src="../hugo-goa-demo/Project2_files/figure-html/unnamed-chunk-1-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mid1&lt;- midwest%&gt;% group_by(state)</code></pre>
+<pre class="r"><code>m1&lt;-manova(cbind(poptotal,popdensity)~state, data=midwest)
+summary.aov(m1)</code></pre>
+<pre><code>##  Response poptotal :
+##              Df     Sum Sq    Mean Sq F value Pr(&gt;F)
+## state         4 2.8713e+11 7.1783e+10   0.806 0.5218
+## Residuals   432 3.8476e+13 8.9064e+10               
+## 
+##  Response popdensity :
+##              Df     Sum Sq  Mean Sq F value Pr(&gt;F)
+## state         4 2.8050e+08 70126025  1.1958 0.3119
+## Residuals   432 2.5334e+10 58643072</code></pre>
+<pre class="r"><code> midwest%&gt;%group_by(state)%&gt;%summarize(mean(poptotal),mean(popdensity))</code></pre>
+<pre><code>## # A tibble: 5 x 3
+##   state `mean(poptotal)` `mean(popdensity)`
+##   &lt;chr&gt;            &lt;dbl&gt;              &lt;dbl&gt;
+## 1 IL             112065.              2824.
+## 2 IN              60263.              2573.
+## 3 MI             111992.              3011.
+## 4 OH             123263.              4639.
+## 5 WI              67941.              2373.</code></pre>
+<pre class="r"><code>pairwise.t.test(midwest$poptotal,midwest$state,
+                p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  midwest$poptotal and midwest$state 
+## 
+##    IL   IN   MI   OH  
+## IN 0.23 -    -    -   
+## MI 1.00 0.25 -    -   
+## OH 0.80 0.16 0.81 -   
+## WI 0.34 0.87 0.36 0.24
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(midwest$popdensity,midwest$state,
+                     p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  midwest$popdensity and midwest$state 
+## 
+##    IL    IN    MI    OH   
+## IN 0.820 -     -     -    
+## MI 0.869 0.706 -     -    
+## OH 0.104 0.071 0.165 -    
+## WI 0.702 0.868 0.605 0.063
+## 
+## P value adjustment method: none</code></pre>
+<p><em>One MANOVA test with 2 numeric response variables and a categorical variable predictor with 5 levels was conducted, as well as, 10 t-tests for a total of 13 tests.A MANOVA test was used to study the effects on the categorical variable, ‘state’ (IL, IN, MI, OH, WI), with two dependent numeric variables, ‘poptotal’ and ‘popdensity’. Density plots did not show adequate results for multivariate normality. After studying the covariance matricies of each group showed relative homogeneity. From the results the MANOVA test was proved to be a good technique. There were distinct differences found for the five midwest states on the two dependent variables. The Bonferroni method was used to control multiple comparisons of Type I error rates. This was done by conducting ANOVA testing for each dependent variable and used after the MANOVA test. The univariate ANOVAs for ‘poptotal’ and ‘popdensity’ were also significant. Next a post hoc analysis was used to do a pairwise comparisons in order to see which ‘state’ differed in population total and population density. Of the five ‘states’ examined, they all differed significantly from each other by of population total and population density, as shown by the Bonferroni method.</em></p>
+<ul>
+<li><strong>2. (10 pts)</strong> Perform some kind of randomization test on your data (that makes sense). This can be anything you want! State null and alternative hypotheses, perform the test, and interpret the results (7). Create a plot visualizing the null distribution and the test statistic (3).</li>
+</ul>
+<pre class="r"><code>library(vegan)
+dists&lt;-midwest%&gt;%select(poptotal, popdensity)%&gt;%dist()
+adonis(dists~state,data=midwest)</code></pre>
+<pre><code>##
+## Call:
+## adonis(formula = dists ~ state, data = midwest)
+##
+## Permutation: free
+## Number of permutations: 999
+##
+## Terms added sequentially (first to last)
+##
+## Df SumsOfSqs MeanSqs F.Model R2 Pr(&gt;F)
+## state 4 2.8741e+11 7.1853e+10 0.80623 0.00741 0.595
+## Residuals 432 3.8501e+13 8.9123e+10 0.99259
+## Total 436 3.8788e+13 1.00000</code></pre>
+<p><em>The null hypothesis states that for the population total and population density, means of each state are equal. The alternative hypothesis states that for at least one dependent variable, at least one state mean is different.The randomized test conducted was a PERMANOVA. With this the question, “Does the population total affect distribution amoung states?” will be answered. The resulting p-value was 0.573</em></p>
+<ul>
+<li><p><strong>3. (35 pts)</strong> Build a linear regression model predicting one of your response variables from at least 2 other variables, including their interaction. Mean-center any numeric variables involved in the interaction.</p>
+<ul>
+<li>Interpret the coefficient estimates (do not discuss significance) (10)</li>
+<li>Plot the regression using <code>ggplot()</code>. If your interaction is numeric by numeric, refer to code near the end of WS15 to make the plot. If you have 3 or more predictors, just chose two to plot for convenience. (7)</li>
+<li>Check assumptions of linearity, normality, and homoskedasticity either graphically or using a hypothesis test (3)</li>
+<li>Regardless, recompute regression results with robust standard errors via <code>coeftest(..., vcov=vcovHC(...))</code>. Discuss significance of results, including any changes from before/after robust SEs if applicable. (7)</li>
+<li>What proportion of the variation in the outcome does your model explain? (3)</li>
+<li>Finally, rerun the regression but without interactions (just main effects); compare this with the interaction model and the null model using a likelihood ratio test (4)</li>
+</ul></li>
+</ul>
+<pre class="r"><code>library(tidyverse)
+fit&lt;-lm(poptotal~popdensity, data= midwest)
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = poptotal ~ popdensity, data = midwest)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -1262311 -3536 5895 15990 2042898
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -1.207e+04 6.783e+03 -1.779 0.076 .
+## popdensity 3.493e+01 8.213e-01 42.527 &lt;2e-16 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 131400 on 435 degrees of
+freedom
+## Multiple R-squared: 0.8061, Adjusted R-squared: 0.8057
+## F-statistic: 1809 on 1 and 435 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>midwest%&gt;%ggplot(aes(popdensity,poptotal))+geom_point()+geom_smooth(method = &#39;lm&#39;,se=F)</code></pre>
+<p><img src="../hugo-goa-demo/Project2_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code> head(midwest,30)</code></pre>
+<pre><code>## # A tibble: 30 x 28
+## PID county state area poptotal popdensity popwhite
+popblack popamerindian popasian popother
+## &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+&lt;int&gt; &lt;int&gt;
+## 1 561 ADAMS IL 0.052 66090 1271.  63917 1702 98 249 124
+## 2 562 ALEXA… IL 0.014 10626 759 7054 3496 19 48 9
+## 3 563 BOND IL 0.022 14991 681.  14477 429 35 16 34
+## 4 564 BOONE IL 0.017 30806 1812.  29344 127 46 150 1139
+## 5 565 BROWN IL 0.018 5836 324.  5264 547 14 5 6
+## 6 566 BUREAU IL 0.05 35688 714.  35157 50 65 195 221
+## 7 567 CALHO… IL 0.017 5322 313.  5298 1 8 15 0
+## 8 568 CARRO… IL 0.027 16805 622.  16519 111 30 61 84
+## 9 569 CASS IL 0.024 13437 560.  13384 16 8 23 6
+## 10 570 CHAMP… IL 0.058 173025 2983.  146506 16559 331
+8033 1596
+## # … with 20 more rows, and 17 more variables: percwhite
+&lt;dbl&gt;, percblack &lt;dbl&gt;,
+## # percamerindan &lt;dbl&gt;, percasian &lt;dbl&gt;, percother &lt;dbl&gt;,
+popadults &lt;int&gt;, perchsd &lt;dbl&gt;,
+## # percollege &lt;dbl&gt;, percprof &lt;dbl&gt;, poppovertyknown
+&lt;int&gt;, percpovertyknown &lt;dbl&gt;,
+## # percbelowpoverty &lt;dbl&gt;, percchildbelowpovert &lt;dbl&gt;,
+percadultpoverty &lt;dbl&gt;,
+## # percelderlypoverty &lt;dbl&gt;, inmetro &lt;int&gt;, category
+&lt;chr&gt;</code></pre>
+<pre class="r"><code>library(lmtest)
+library(sandwich)
+  coeftest(fit)[,1:2]</code></pre>
+<pre><code>##                 Estimate   Std. Error
+## (Intercept) -12065.10114 6783.0533510
+## popdensity      34.92717    0.8212989</code></pre>
+<pre class="r"><code>coeftest(fit, vcov=vcovHC(fit))[,1:2] </code></pre>
+<pre><code>##                 Estimate  Std. Error
+## (Intercept) -12065.10114 24143.45679
+## popdensity      34.92717    10.21365</code></pre>
+<p><em>The null hypothesis for this linear regression was that the population density does not explain variation in population total. The alternative hypothesis was that the population density does explain variation in population total. From these results we can see that the line of best fit is -1.207e+04 + 3.493e+01 (popdensity). Population density explains a significant amount of variation in poptotal. On average for every increase in popdensity, there is a 3.493e+01 increase in population total. Because population density is significant, we can reject the null hypothesis.</em></p>
+<ul>
+<li><strong>4. (5 pts)</strong> Rerun same regression model (with interaction), but this time compute bootstrapped standard errors. Discuss any changes you observe in SEs and p-values using these SEs compared to the original SEs and the robust SEs)</li>
+</ul>
+<pre class="r"><code>fit&lt;-lm(poptotal~popdensity, data= midwest)
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = poptotal ~ popdensity, data = midwest)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -1262311 -3536 5895 15990 2042898
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -1.207e+04 6.783e+03 -1.779 0.076 .
+## popdensity 3.493e+01 8.213e-01 42.527 &lt;2e-16 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 131400 on 435 degrees of
+freedom
+## Multiple R-squared: 0.8061, Adjusted R-squared: 0.8057
+## F-statistic: 1809 on 1 and 435 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>t.test(data=midwest, poptotal~inmetro, var.eq=T)</code></pre>
+<pre><code>##
+## Two Sample t-test
+##
+## data: poptotal by inmetro
+## t = -6.761, df = 435, p-value = 4.425e-11
+## alternative hypothesis: true difference in means is not
+equal to 0
+## 95 percent confidence interval:
+## -249665.2 -137202.6
+## sample estimates:
+## mean in group 0 mean in group 1
+## 29734.23 223168.13</code></pre>
+<pre class="r"><code>fit1&lt;-lm(poptotal ~ inmetro + popdensity, data=midwest)
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = poptotal ~ popdensity, data = midwest)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -1262311 -3536 5895 15990 2042898
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -1.207e+04 6.783e+03 -1.779 0.076 .
+## popdensity 3.493e+01 8.213e-01 42.527 &lt;2e-16 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 131400 on 435 degrees of
+freedom
+## Multiple R-squared: 0.8061, Adjusted R-squared: 0.8057
+## F-statistic: 1809 on 1 and 435 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>library(sandwich); library(lmtest)
+fit&lt;-lm(poptotal~popdensity+inmetro,data=midwest)
+bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 223.23, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(fit)$coef[,1:2]</code></pre>
+<pre><code>##                 Estimate   Std. Error
+## (Intercept)  -4150.02916 7.776203e+03
+## popdensity      35.63568 8.877695e-01
+## inmetro     -29453.34201 1.431514e+04</code></pre>
+<pre class="r"><code> coeftest(fit, vcov = vcovHC(fit))[,1:2]</code></pre>
+<pre><code>##                 Estimate  Std. Error
+## (Intercept)  -4150.02916 11022.93354
+## popdensity      35.63568    11.56105
+## inmetro     -29453.34201 50444.99949</code></pre>
+<p><em>Controlling for ‘inmetro’ there is a significant effect of population density on the population total. For every one unit increase in population density, the population tota increases 3.493e+01 on average, t= 4.887, df= 435, p &lt; 0.001. However, after controlling for population density there is no difference in population total between inmetro and non-inmetro, t= 42.527 , df= 435, p=0.105 .</em></p>
+<ul>
+<li><p><strong>5. (40 pts)</strong> Perform a logistic regression predicting a binary categorical variable (if you don’t have one, make/get one) from at least two explanatory variables (interaction not necessary).</p>
+<ul>
+<li>Interpret coefficient estimates in context (10)</li>
+<li>Report a confusion matrix for your logistic regression (2)</li>
+<li>Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) of your model (5)</li>
+<li>Using ggplot, plot density of log-odds (logit) by your binary outcome variable (3)</li>
+<li>Generate an ROC curve (plot) and calculate AUC (either manually or with a package); interpret (10)</li>
+<li>Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall (10)</li>
+</ul></li>
+</ul>
+<pre class="r"><code>library(tidyverse); library(lmtest)
+data(midwest)
+data&lt;-midwest
+data$y&lt;-ifelse(midwest$area==1,1,0)
+fit&lt;-glm(area~inmetro,data=data,family=&quot;binomial&quot;)
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## glm(formula = area ~ inmetro, family = &quot;binomial&quot;, data
+= data)
+##
+## Deviance Residuals:
+## Min 1Q Median 3Q Max
+## -0.18572 -0.05357 -0.01837 0.03580 0.33334
+##
+## Coefficients:
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) -3.3380 0.3244 -10.290 &lt;2e-16 ***
+## inmetro -0.1034 0.5718 -0.181 0.857
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## (Dispersion parameter for binomial family taken to be 1)
+##
+## Null deviance: 2.6424 on 436 degrees of freedom
+## Residual deviance: 2.6093 on 435 degrees of freedom
+## AIC: 33.483
+##
+## Number of Fisher Scoring iterations: 6</code></pre>
+<pre class="r"><code> exp(coef(fit))%&gt;%round(3)</code></pre>
+<pre><code>## (Intercept)     inmetro 
+##       0.036       0.902</code></pre>
+<pre class="r"><code>data$prob&lt;-predict(fit,type=&quot;response&quot;) 
+data$area&lt;-as.factor(data$area)
+
+
+ggplot(data, aes(inmetro,prob))+geom_jitter(aes(color=area),alpha=.5,size=3)+
+  geom_rug(aes(color=area),sides=&quot;right&quot;)+geom_hline(yintercept=1)</code></pre>
+<p><img src="../hugo-goa-demo/Project2_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>table(predict=as.numeric(data$prob&gt;.5),truth=data$y)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict   0 Sum
+##     0   437 437
+##     Sum 437 437</code></pre>
+<pre class="r"><code>mean(data[data$y==1,]$prob&gt;.9)</code></pre>
+<pre><code>## [1] NaN</code></pre>
+<pre class="r"><code>mean(data[data$y==0,]$prob&lt;.9)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>tpr&lt;-function(p)mean(data[data$y==1,]$prob&gt;p)
+fpr&lt;-function(p)mean(data[data$y==0,]$prob&gt;p)
+data&lt;-data[order(data$prob),]
+prob&lt;-data$prob
+cuts&lt;-unique(c(0,(prob[-1]+prob[-32])/2,1))
+TPR&lt;-sapply(cuts,tpr)
+FPR&lt;-sapply(cuts,fpr)
+
+sens&lt;-function(p,data=data, y=y) mean(data[data$y==1,]$prob&gt;p)
+spec&lt;-function(p,data=data, y=y) mean(data[data$y==0,]$prob&lt;p)
+
+sensitivity&lt;-sapply(seq(0,1,.01),sens,data)
+specificity&lt;-sapply(seq(0,1,.01),spec,data)
+
+ROC1&lt;-
+  data.frame(cuts,TPR,FPR,TP=TPR*13,FP=FPR*19)%&gt;%
+  arrange(desc(cuts))
+ROC1%&gt;%round(5)</code></pre>
+<pre><code>##      cuts TPR     FPR  TP       FP
+## 1 1.00000 NaN 0.00000 NaN  0.00000
+## 2 0.03429 NaN 0.00000 NaN  0.00000
+## 3 0.03103 NaN 0.65675 NaN 12.47826
+## 4 0.00000 NaN 1.00000 NaN 19.00000</code></pre>
+<pre class="r"><code>ggplot(data, aes(inmetro,prob))+geom_point(aes(color=area),alpha=.5,size=3)+  geom_rug(aes(color=area),alpha=.5,sides=&quot;right&quot;)+  geom_hline(yintercept=c(.85))+theme(legend.position=c(.9,.8))</code></pre>
+<p><img src="../hugo-goa-demo/Project2_files/figure-html/unnamed-chunk-15-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>widths&lt;-diff(ROC1$FPR) 
+heights&lt;-(ROC1$TPR[-1]+ROC1$TPR[-length(ROC1$TPR)])/2
+AUC&lt;-sum(heights*widths)
+AUC</code></pre>
+<pre><code>## [1] NaN</code></pre>
+<p><em>A logistic regression was conducted by predicting area from ‘inmetro’. From these results we see that for every 1 unit increase in area, the odds of having a manual decrease by a factor of 0.902 (i.e. 9.8%)</em></p>
+<ul>
+<li><strong>6. (10 pts)</strong> Choose one variable you want to predict (can be one you used from before; either binary or continuous) and run a LASSO regression inputting all the rest of your variables as predictors. Choose lambda to give the simplest model whose accuracy is near that of the best (i.e., <code>lambda.1se</code>). Discuss which variables are retained. Perform 10-fold CV using this model: if response in binary, compare model’s out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!</li>
+</ul>
+<pre class="r"><code>f3&lt;-lm(area~.,data=midwest)
+yhat&lt;-predict(f3)</code></pre>
+<pre class="r"><code>mean((midwest$area-yhat)^2) </code></pre>
+<pre><code>## [1] 1.360883e-05</code></pre>
+<pre class="r"><code>library(glmnet)
+data(midwest)
+midwest$county = NULL
+midwest$state = NULL
+midwest$category = NULL
+
+y&lt;-as.matrix(midwest$area)
+x&lt;-midwest[,-1]%&gt;%scale%&gt;%as.matrix
+
+cv&lt;-cv.glmnet(x,y)
+lasso1&lt;-glmnet(x,y,lambda=cv$lambda.1se)
+coef(lasso1)</code></pre>
+<pre><code>## 25 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                              s0
+## (Intercept)          0.03316934
+## area                 0.01420917
+## poptotal             .         
+## popdensity           .         
+## popwhite             .         
+## popblack             .         
+## popamerindian        .         
+## popasian             .         
+## popother             .         
+## percwhite            .         
+## percblack            .         
+## percamerindan        .         
+## percasian            .         
+## percother            .         
+## popadults            .         
+## perchsd              .         
+## percollege           .         
+## percprof             .         
+## poppovertyknown      .         
+## percpovertyknown     .         
+## percbelowpoverty     .         
+## percchildbelowpovert .         
+## percadultpoverty     .         
+## percelderlypoverty   .         
+## inmetro              .</code></pre>
+<pre><code>## R version 3.4.4 (2018-03-15)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.3 LTS
+##
+## Matrix products: default
+## BLAS: /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+## LAPACK:
+/usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+##
+## locale:
+## [1] LC_CTYPE=en_US.UTF-8 LC_NUMERIC=C
+LC_TIME=en_US.UTF-8
+## [4] LC_COLLATE=en_US.UTF-8 LC_MONETARY=en_US.UTF-8
+LC_MESSAGES=en_US.UTF-8
+## [7] LC_PAPER=en_US.UTF-8 LC_NAME=C LC_ADDRESS=C
+## [10] LC_TELEPHONE=C LC_MEASUREMENT=en_US.UTF-8
+LC_IDENTIFICATION=C
+##
+## attached base packages:
+## [1] methods stats graphics grDevices utils datasets base
+##
+## other attached packages:
+## [1] glmnet_2.0-16 foreach_1.4.4 Matrix_1.2-12
+sandwich_2.5-1 lmtest_0.9-37
+## [6] zoo_1.8-6 vegan_2.4-6 lattice_0.20-35 permute_0.9-4
+gridExtra_2.3
+## [11] forcats_0.4.0 stringr_1.4.0 dplyr_0.8.3 purrr_0.3.2
+readr_1.3.1
+## [16] tidyr_1.0.0.9000 tibble_2.1.3 ggplot2_3.2.1
+tidyverse_1.2.1 knitr_1.26
+##
+## loaded via a namespace (and not attached):
+## [1] Rcpp_1.0.2 lubridate_1.7.4 assertthat_0.2.1
+zeallot_0.1.0 digest_0.6.23
+## [6] utf8_1.1.4 R6_2.4.0 cellranger_1.1.0 backports_1.1.5
+evaluate_0.14
+## [11] httr_1.4.0 blogdown_0.17 pillar_1.4.2 rlang_0.4.0
+lazyeval_0.2.2
+## [16] readxl_1.3.1 rstudioapi_0.10 rmarkdown_2.0
+labeling_0.3 munsell_0.5.0
+## [21] broom_0.5.2 compiler_3.4.4 modelr_0.1.4 xfun_0.11
+pkgconfig_2.0.2
+## [26] mgcv_1.8-23 htmltools_0.3.6 tidyselect_0.2.5
+bookdown_0.16 codetools_0.2-15
+## [31] fansi_0.4.0 crayon_1.3.4 withr_2.1.2 MASS_7.3-49
+grid_3.4.4
+## [36] nlme_3.1-131 jsonlite_1.6 gtable_0.3.0
+lifecycle_0.1.0 magrittr_1.5
+## [41] scales_1.0.0 cli_2.0.0 stringi_1.4.3 xml2_1.2.0
+generics_0.0.2
+## [46] vctrs_0.2.0 iterators_1.0.10 tools_3.4.4 glue_1.3.1
+hms_0.5.0
+## [51] parallel_3.4.4 yaml_2.2.0 colorspace_1.4-1
+cluster_2.0.6 rvest_0.3.4
+## [56] haven_2.1.1</code></pre>
+<pre><code>## [1] &quot;2019-12-15 22:06:09 CST&quot;</code></pre>
+<pre><code>## sysname release
+## &quot;Linux&quot; &quot;4.15.0-62-generic&quot;
+## version nodename
+## &quot;#69-Ubuntu SMP Wed Sep 4 20:55:53 UTC 2019&quot;
+&quot;educcomp01.ccbb.utexas.edu&quot;
+## machine login
+## &quot;x86_64&quot; &quot;unknown&quot;
+## user effective_user
+## &quot;cmb5726&quot; &quot;cmb5726&quot;</code></pre>
+</div>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-shenoybr-github-io-hugo-goa-demo" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="../hugo-goa/projects/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="../hugo-goa"></a></span>
+  
+  
+  <span><a class="menu-item" href="../hugo-goa/project1/"> | next &gt;</a></span>
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="../hugo-goa">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Christine Bandela. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+      <h6><a href="" aria-label="RSS Feed"><i class="fas fa-rss" aria-hidden="true"></i></a></h6>
+    
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>
+
+

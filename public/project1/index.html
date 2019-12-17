@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Simple theme">
+<meta name="keywords" content="goa,hugo,teacher">
+
+<base href="../hugo-goa">
+
+<title>
+  Final Project - Project 1 
+</title>
+
+<meta name="generator" content="Hugo 0.61.0" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="../hugo-goa/css/main.css">
+<link rel="stylesheet" href="../hugo-goa/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="../manifest.json">
+<link rel="mask-icon" href="../safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Project 1</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+       
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    
+    
+    
+
+
+<div id="christine-bandela-cmb5726" class="section level2">
+<h2>Christine Bandela cmb5726</h2>
+<div id="introduction-4-pts" class="section level4">
+<h4>0. Introduction (4 pts)</h4>
+<p>For this exploratory data analysis project I have chosen two datasets that I will use to compare and contrast betweeen Game of Thrones characters and thier infuence on baby names from 1880 to 2015. The dataset ‘GOT’contains variables about the Game of Thrones characters including their first name, male, as well as, popularity. The ’Names’ dataset contains variables including YearofBirth, Number, name and Sex. These datasets were acquired through the Kaggle and Data.world database. I found this area of study interesting because I am a fan of the show and I wanted to see which characters people named thier children after. Some questions I hope to answer would be, “Are the female names more popular than the males?” and “Which character is most popular out of all names?”. I expect to see a larger count for names of popular characters, such as Arya or Jon.</p>
+</div>
+<div id="tidying-rearranging-widelong-8-pts" class="section level4">
+<h4>1. Tidying: Rearranging Wide/Long (8 pts)</h4>
+<pre class="r"><code>library(&quot;tidyverse&quot;)
+library(&quot;tidyr&quot;)
+
+library(dplyr)
+GOT &lt;- read.csv(&quot;~/Website/Website/content/character-predictions_pose.csv&quot;)
+Names &lt;- read.csv(&quot;~/Website/Website/content/top25babynames-by-sex-2005-2017.csv&quot;)
+
+head(GOT)</code></pre>
+<pre><code>##   S.No  plod                 name                title male  culture
+## 1    1 0.946 Viserys II Targaryen                         1         
+## 2    2 0.613          Walder Frey Lord of the Crossing    1 Rivermen
+## 3    3 0.507         Addison Hill                  Ser    1         
+## 4    4 0.924          Aemma Arryn                Queen    0         
+## 5    5 0.383       Sylva Santagar           Greenstone    0  Dornish
+## 6    6 0.979     Tommen Baratheon                         1         
+##   dateOfBirth DateoFdeath             mother           father
+## 1          NA          NA Rhaenyra Targaryen Daemon Targaryen
+## 2         208          NA                                    
+## 3          NA          NA                                    
+## 4          82         105                                    
+## 5         276          NA                                    
+## 6          NA          NA   Cersei Lannister Robert Baratheon
+##                 heir          house              spouse book1 book2 book3 book4
+## 1 Aegon IV Targaryen                                        0     0     0     0
+## 2                        House Frey         Perra Royce     1     1     1     1
+## 3                       House Swyft                         0     0     0     1
+## 4                       House Arryn Viserys I Targaryen     0     0     0     0
+## 5                    House Santagar     Eldon Estermont     0     0     0     1
+## 6 Myrcella Baratheon                                        0     0     0     0
+##   book5 isAliveMother isAliveFather isAliveHeir isAliveSpouse isMarried isNoble
+## 1     0             1             0           0            NA         0       0
+## 2     1            NA            NA          NA             1         1       1
+## 3     0            NA            NA          NA            NA         0       1
+## 4     0            NA            NA          NA             0         1       1
+## 5     0            NA            NA          NA             1         1       1
+## 6     0             1             1           1            NA         0       0
+##   age numDeadRelations boolDeadRelations isPopular popularity isAlive
+## 1  NA               11                 1         1 0.60535117       0
+## 2  97                1                 1         1 0.89632107       1
+## 3  NA                0                 0         0 0.26755853       1
+## 4  23                0                 0         0 0.18394649       0
+## 5  29                0                 0         0 0.04347826       1
+## 6  NA                5                 1         1 1.00000000       1</code></pre>
+<pre class="r"><code>GOT$S.No &lt;- NULL
+GOT$plod &lt;- NULL
+GOT$culture &lt;- NULL
+GOT$dateOfBirth &lt;- NULL
+GOT$DateoFdeath &lt;- NULL
+GOT$mother &lt;- NULL
+GOT$father &lt;- NULL
+GOT$heir &lt;- NULL
+GOT$spouse &lt;- NULL
+GOT$isAlive &lt;- NULL
+GOT$boolDeadRelations &lt;- NULL
+GOT$numDeadRelations &lt;- NULL
+GOT$isNoble &lt;- NULL
+GOT$isMarried &lt;- NULL
+GOT$isAliveSpouse &lt;- NULL
+GOT$isAliveHeir &lt;- NULL
+GOT$isAliveFather &lt;- NULL
+GOT$isAliveMother &lt;- NULL
+GOT$book1 &lt;- NULL
+GOT$book2 &lt;- NULL
+GOT$book3 &lt;- NULL
+GOT$book4 &lt;- NULL
+GOT$book5 &lt;- NULL
+GOT$title &lt;- NULL
+GOT$house &lt;- NULL
+GOT$LastName &lt;- NULL
+GOT$age &lt;- NULL
+
+
+GOT &lt;- separate(GOT, name, c(&quot;FirstName&quot;, &quot;LastName&quot;))</code></pre>
+<pre><code>## Warning: Expected 2 pieces. Additional pieces discarded in 202 rows [1, 8, 12,
+## 13, 14, 15, 26, 29, 30, 32, 47, 54, 86, 87, 89, 91, 100, 104, 109, 110, ...].</code></pre>
+<pre><code>## Warning: Expected 2 pieces. Missing pieces filled with `NA` in 586 rows [9, 11,
+## 17, 19, 20, 24, 25, 27, 28, 33, 35, 37, 39, 41, 43, 44, 45, 46, 48, 50, ...].</code></pre>
+<pre class="r"><code>GOT2 &lt;- GOT %&gt;% filter(!is.na(FirstName)) %&gt;% group_by(male, 
+    FirstName) %&gt;% summarise(mean_isPopular = mean(isPopular, 
+    na.rm = TRUE))
+GOT2</code></pre>
+<pre><code>## # A tibble: 1,544 x 3
+## # Groups:   male [2]
+##     male FirstName  mean_isPopular
+##    &lt;int&gt; &lt;chr&gt;               &lt;dbl&gt;
+##  1     0 Aegon                   0
+##  2     0 Aelinor                 0
+##  3     0 Aemma                   0
+##  4     0 Aethan                  0
+##  5     0 Aethelmure              0
+##  6     0 Aggo                    0
+##  7     0 Aglantine               0
+##  8     0 Agrivane                0
+##  9     0 Alannys                 0
+## 10     0 Alaric                  0
+## # … with 1,534 more rows</code></pre>
+<pre class="r"><code>GOT2_wide &lt;- GOT2 %&gt;% pivot_wider(names_from = FirstName, values_from = mean_isPopular)
+GOT2_wide</code></pre>
+<pre><code>## # A tibble: 2 x 1,442
+## # Groups:   male [2]
+##    male Aegon Aelinor Aemma Aethan Aethelmure  Aggo Aglantine Agrivane Alannys
+##   &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+## 1     0 0           0     0      0          0     0         0        0       0
+## 2     1 0.455      NA    NA     NA         NA    NA        NA       NA      NA
+## # … with 1,432 more variables: Alaric &lt;dbl&gt;, Alayaya &lt;dbl&gt;, Alerie &lt;dbl&gt;,
+## #   Alesander &lt;dbl&gt;, Alia &lt;dbl&gt;, Alicent &lt;dbl&gt;, Alla &lt;dbl&gt;, Allyria &lt;dbl&gt;,
+## #   Alyce &lt;dbl&gt;, Alyn &lt;dbl&gt;, Alys &lt;dbl&gt;, Alysane &lt;dbl&gt;, Alysanne &lt;dbl&gt;,
+## #   Alyssa &lt;dbl&gt;, Alyx &lt;dbl&gt;, Amabel &lt;dbl&gt;, Amarei &lt;dbl&gt;, Ambrode &lt;dbl&gt;,
+## #   Amerei &lt;dbl&gt;, Andrey &lt;dbl&gt;, Annara &lt;dbl&gt;, Anya &lt;dbl&gt;, Arianne &lt;dbl&gt;,
+## #   Arryk &lt;dbl&gt;, Arwyn &lt;dbl&gt;, Arya &lt;dbl&gt;, Asha &lt;dbl&gt;, Ashara &lt;dbl&gt;,
+## #   Ayrmidon &lt;dbl&gt;, Azor &lt;dbl&gt;, Azzak &lt;dbl&gt;, Baela &lt;dbl&gt;, Baelon &lt;dbl&gt;,
+## #   Bandy &lt;dbl&gt;, Barba &lt;dbl&gt;, Barbara &lt;dbl&gt;, Barbrey &lt;dbl&gt;, Bass &lt;dbl&gt;,
+## #   Bayard &lt;dbl&gt;, Beardless &lt;dbl&gt;, Belandra &lt;dbl&gt;, Beldecar &lt;dbl&gt;, Bella &lt;dbl&gt;,
+## #   Bellegere &lt;dbl&gt;, Bellena &lt;dbl&gt;, Bellonara &lt;dbl&gt;, Ben &lt;dbl&gt;, Benedict &lt;dbl&gt;,
+## #   Bennet &lt;dbl&gt;, Beqqo &lt;dbl&gt;, Berena &lt;dbl&gt;, Beron &lt;dbl&gt;, Bess &lt;dbl&gt;,
+## #   Bessa &lt;dbl&gt;, Beth &lt;dbl&gt;, Bethany &lt;dbl&gt;, Betharios &lt;dbl&gt;, Bharbo &lt;dbl&gt;,
+## #   Blind &lt;dbl&gt;, Bloodbeard &lt;dbl&gt;, Bodger &lt;dbl&gt;, Bran &lt;dbl&gt;, Branston &lt;dbl&gt;,
+## #   Brea &lt;dbl&gt;, Brella &lt;dbl&gt;, Briar &lt;dbl&gt;, Brown &lt;dbl&gt;, Bryan &lt;dbl&gt;, Buu &lt;dbl&gt;,
+## #   Byron &lt;dbl&gt;, Cadwyn &lt;dbl&gt;, Calon &lt;dbl&gt;, Canker &lt;dbl&gt;, Carellen &lt;dbl&gt;,
+## #   Carolei &lt;dbl&gt;, Carrot &lt;dbl&gt;, Cass &lt;dbl&gt;, Cassella &lt;dbl&gt;, Castos &lt;dbl&gt;,
+## #   Catelyn &lt;dbl&gt;, Cedra &lt;dbl&gt;, Cedrik &lt;dbl&gt;, Cerenna &lt;dbl&gt;, Cersei &lt;dbl&gt;,
+## #   Cetheres &lt;dbl&gt;, Chataya &lt;dbl&gt;, Chella &lt;dbl&gt;, Cheyk &lt;dbl&gt;, Chiswyck &lt;dbl&gt;,
+## #   Clarence &lt;dbl&gt;, Clarent &lt;dbl&gt;, Cleyton &lt;dbl&gt;, Colin &lt;dbl&gt;, Conwy &lt;dbl&gt;,
+## #   Corliss &lt;dbl&gt;, Cosgrove &lt;dbl&gt;, Courtenay &lt;dbl&gt;, Creighton &lt;dbl&gt;,
+## #   Cynthea &lt;dbl&gt;, Cyrenna &lt;dbl&gt;, …</code></pre>
+<pre class="r"><code>head(GOT2)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+## # Groups:   male [1]
+##    male FirstName  mean_isPopular
+##   &lt;int&gt; &lt;chr&gt;               &lt;dbl&gt;
+## 1     0 Aegon                   0
+## 2     0 Aelinor                 0
+## 3     0 Aemma                   0
+## 4     0 Aethan                  0
+## 5     0 Aethelmure              0
+## 6     0 Aggo                    0</code></pre>
+<pre class="r"><code>mean_name &lt;- mean(GOT$FirstName)</code></pre>
+<pre><code>## Warning in mean.default(GOT$FirstName): argument is not numeric or logical:
+## returning NA</code></pre>
+<pre class="r"><code>GOT2_long &lt;- GOT2_wide %&gt;% pivot_longer(cols = mean_name, names_to = &quot;male&quot;, 
+    values_to = &quot;isPopular&quot;)
+
+GOT2_long</code></pre>
+<pre><code>## # A tibble: 2,884 x 2
+## # Groups:   male [1,442]
+##    male       isPopular
+##    &lt;chr&gt;          &lt;dbl&gt;
+##  1 male               0
+##  2 Aegon              0
+##  3 Aelinor            0
+##  4 Aemma              0
+##  5 Aethan             0
+##  6 Aethelmure         0
+##  7 Aggo               0
+##  8 Aglantine          0
+##  9 Agrivane           0
+## 10 Alannys            0
+## # … with 2,874 more rows</code></pre>
+<pre class="r"><code>head(Names)</code></pre>
+<pre><code>##   YEAR Gender RANK     Name Count
+## 1 2005 Female    1    EMILY  3268
+## 2 2005 Female    2   ASHLEY  2770
+## 3 2005 Female    3 SAMANTHA  2483
+## 4 2005 Female    4 ISABELLA  2333
+## 5 2005 Female    5      MIA  2172
+## 6 2005 Female    6  NATALIE  2035</code></pre>
+<pre class="r"><code>Names2 &lt;- Names %&gt;% filter(!is.na(Name)) %&gt;% group_by(YEAR, Name) %&gt;% 
+    summarise(mean_Number = mean(RANK, na.rm = TRUE))
+Names2</code></pre>
+<pre><code>## # A tibble: 651 x 3
+## # Groups:   YEAR [13]
+##     YEAR Name      mean_Number
+##    &lt;int&gt; &lt;fct&gt;           &lt;dbl&gt;
+##  1  2005 ABIGAIL            15
+##  2  2005 ALEXANDER          14
+##  3  2005 ALEXIS             21
+##  4  2005 ALYSSA              9
+##  5  2005 ANDREA             22
+##  6  2005 ANDREW              7
+##  7  2005 ANGEL               3
+##  8  2005 ANGELINA           23
+##  9  2005 ANTHONY             2
+## 10  2005 ASHLEY              2
+## # … with 641 more rows</code></pre>
+<pre class="r"><code>Names2_wide &lt;- Names2 %&gt;% pivot_wider(names_from = Name, values_from = mean_Number)
+Names2_wide</code></pre>
+<pre><code>## # A tibble: 13 x 95
+## # Groups:   YEAR [13]
+##     YEAR ABIGAIL ALEXANDER ALEXIS ALYSSA ANDREA ANDREW ANGEL ANGELINA ANTHONY
+##    &lt;int&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+##  1  2005      15        14     21      9     22      7     3       23       2
+##  2  2006       9        14     NA     13     17      6     3       23       2
+##  3  2007      13        10     NA      9     20      6     3       NA       2
+##  4  2008       9         6     NA     15     21      7     3       NA       2
+##  5  2009       9         5     24     17     20      8     3       NA       2
+##  6  2010       8         4     NA     16     NA      9     5       NA       3
+##  7  2011       8         6     NA     20     22      9    12       NA       4
+##  8  2012       8         7     NA     NA     NA     10    14       NA       8
+##  9  2013       8         7     NA     NA     NA     12    17       NA       8
+## 10  2014       9         5     NA     NA     NA     12    21       NA       8
+## 11  2015       8         6     NA     NA     NA     20    22       NA      16
+## 12  2016      10         7     NA     NA     NA     NA    NA       NA      17
+## 13  2017       9         9     NA     NA     NA     NA    NA       NA      24
+## # … with 85 more variables: ASHLEY &lt;dbl&gt;, AVA &lt;dbl&gt;, BRANDON &lt;dbl&gt;,
+## #   BRIANNA &lt;dbl&gt;, CHRISTIAN &lt;dbl&gt;, CHRISTOPHER &lt;dbl&gt;, DANIEL &lt;dbl&gt;,
+## #   DAVID &lt;dbl&gt;, DIEGO &lt;dbl&gt;, ELIZABETH &lt;dbl&gt;, EMILY &lt;dbl&gt;, EMMA &lt;dbl&gt;,
+## #   ETHAN &lt;dbl&gt;, GABRIEL &lt;dbl&gt;, HANNAH &lt;dbl&gt;, ISABELLA &lt;dbl&gt;, JACOB &lt;dbl&gt;,
+## #   JASMINE &lt;dbl&gt;, JENNIFER &lt;dbl&gt;, JESSICA &lt;dbl&gt;, JESUS &lt;dbl&gt;, JONATHAN &lt;dbl&gt;,
+## #   JOSE &lt;dbl&gt;, JOSEPH &lt;dbl&gt;, JOSHUA &lt;dbl&gt;, JUAN &lt;dbl&gt;, KEVIN &lt;dbl&gt;,
+## #   KIMBERLY &lt;dbl&gt;, LUIS &lt;dbl&gt;, MADISON &lt;dbl&gt;, MATTHEW &lt;dbl&gt;, MIA &lt;dbl&gt;,
+## #   MICHAEL &lt;dbl&gt;, NATALIE &lt;dbl&gt;, NATHAN &lt;dbl&gt;, RYAN &lt;dbl&gt;, SAMANTHA &lt;dbl&gt;,
+## #   SARAH &lt;dbl&gt;, SOPHIA &lt;dbl&gt;, STEPHANIE &lt;dbl&gt;, VANESSA &lt;dbl&gt;, ADRIAN &lt;dbl&gt;,
+## #   ALEXA &lt;dbl&gt;, JOCELYN &lt;dbl&gt;, OLIVIA &lt;dbl&gt;, VALERIA &lt;dbl&gt;, CHLOE &lt;dbl&gt;,
+## #   ISAAC &lt;dbl&gt;, NOAH &lt;dbl&gt;, SOFIA &lt;dbl&gt;, VICTORIA &lt;dbl&gt;, CAMILA &lt;dbl&gt;,
+## #   JAYDEN &lt;dbl&gt;, AIDEN &lt;dbl&gt;, EVELYN &lt;dbl&gt;, JULIAN &lt;dbl&gt;, BELLA &lt;dbl&gt;,
+## #   HAILEY &lt;dbl&gt;, AARON &lt;dbl&gt;, BENJAMIN &lt;dbl&gt;, ELLA &lt;dbl&gt;, MASON &lt;dbl&gt;,
+## #   ZOE &lt;dbl&gt;, AUDREY &lt;dbl&gt;, CHARLOTTE &lt;dbl&gt;, DYLAN &lt;dbl&gt;, GENESIS &lt;dbl&gt;,
+## #   LIAM &lt;dbl&gt;, MELANIE &lt;dbl&gt;, GRACE &lt;dbl&gt;, SCARLETT &lt;dbl&gt;, SEBASTIAN &lt;dbl&gt;,
+## #   ALLISON &lt;dbl&gt;, JAMES &lt;dbl&gt;, LOGAN &lt;dbl&gt;, ARIA &lt;dbl&gt;, AVERY &lt;dbl&gt;,
+## #   ELIJAH &lt;dbl&gt;, PENELOPE &lt;dbl&gt;, AMELIA &lt;dbl&gt;, LUCAS &lt;dbl&gt;, MATEO &lt;dbl&gt;,
+## #   OLIVER &lt;dbl&gt;, LUNA &lt;dbl&gt;, MILA &lt;dbl&gt;</code></pre>
+<pre class="r"><code>mean_Name &lt;- mean(Names$Name)</code></pre>
+<pre><code>## Warning in mean.default(Names$Name): argument is not numeric or logical:
+## returning NA</code></pre>
+<pre class="r"><code>Names2_long &lt;- Names2_wide %&gt;% pivot_longer(cols = mean_Name, 
+    names_to = &quot;YearofBirth&quot;, values_to = &quot;RANK&quot;)
+
+Names2_long</code></pre>
+<pre><code>## # A tibble: 1,235 x 2
+##    YearofBirth  RANK
+##    &lt;chr&gt;       &lt;dbl&gt;
+##  1 YEAR         2005
+##  2 ABIGAIL        15
+##  3 ALEXANDER      14
+##  4 ALEXIS         21
+##  5 ALYSSA          9
+##  6 ANDREA         22
+##  7 ANDREW          7
+##  8 ANGEL           3
+##  9 ANGELINA       23
+## 10 ANTHONY         2
+## # … with 1,225 more rows</code></pre>
+</div>
+<div id="the-data-imported-was-already-tidy-however-using-the-pivot_wider-funtion-we-can-untidy-the-data-to-increasing-the-number-of-columns-while-decreasing-the-number-of-rows.-the-selected-columns-used-for-analysis-from-the-got-dataset-were-name-male-and-popularity.-first-the-dplyr-function-was-used-to-construct-a-data-frame-that-shows-the-mean-popularity-of-each-charater-by-name-and-male.-next-using-the-tidyr-function-pivot_wider-turned-the-charater-popularity-into-columns.-the-two-arguments-names_from-and-values_from-tell-us-how-the-the-variables-are-being-organized.-the-names_from-shows-the-output-column-name-such-as-male-and-name-and-values_from-instructs-from-what-column-to-get-the-value-of-the-cells-in-this-case-the-column-was-ispopular." class="section level4">
+<h4>The data imported was already tidy, however using the pivot_wider funtion we can ‘untidy’ the data to increasing the number of columns while, decreasing the number of rows. The selected columns used for analysis from the ‘GOT’ dataset were ‘name’, ‘male’, and ‘popularity’. First the ‘dplyr’ function was used to construct a data frame that shows the mean popularity of each charater by name and male. Next using the ‘tidyr’ function, pivot_wider turned the charater popularity into columns. The two arguments ‘names_from’ and ‘values_from’ tell us how the the variables are being organized. The ‘names_from’ shows the output column name, such as ‘male’ and ‘name’ and ‘values_from’ instructs from what column to get the value of the cells, in this case the column was ‘isPopular’.</h4>
+</div>
+<div id="now-that-the-data-is-untidy-the-function-pivot_longer-can-be-used-to-transition-from-a-wide-format-to-a-long-format-tidying-the-data.-the-number-of-rows-will-be-increased-while-the-number-of-colunms-will-decrease.-there-are-three-arguments-used-in-combination-with-this-function-including-cols-names_to-and-values_to.-the-function-cols-chooses-which-columns-to-transforms-the-dataset-from-wide-long.-the-function-names_to-shows-the-column-name-to-store-data-from-that-column.-the-value_to-shows-the-column-name-to-make-the-date-from-the-values-of-the-cell.-as-a-result-the-variable-of-mean-names-mean_names-was-stored-under-the-variable-maleand-categorized-by-ispopular." class="section level4">
+<h4>Now that the data is ‘untidy’ the function ‘pivot_longer’ can be used to transition from a wide format to a long format tidying the data. The number of rows will be increased while the number of colunms will decrease. There are three arguments used in combination with this function including, ‘cols’, ‘names_to’, and ‘values_to’. The function ‘cols’ chooses which columns to transforms the dataset from wide long. The function ‘names_to&quot; shows the column name to store data from that column. The ’value_to’ shows the column name to make the date from the values of the cell. As a result the variable of mean names, ‘mean_names’ was stored under the variable ‘male’and categorized by ’isPopular’.</h4>
+</div>
+<div id="the-same-steps-were-followed-to-untidy-and-tidy-the-names-dataset.-the-variables-used-from-this-dataset-were-number-yearofbirth-and-name." class="section level4">
+<h4>The same steps were followed to ‘untidy’ and ‘tidy’ the ‘Names’ dataset. The variables used from this dataset were ‘Number’, ‘YearofBirth’ and ‘Name’.</h4>
+</div>
+<div id="joiningmerging-8-pts" class="section level4">
+<h4>2. Joining/Merging (8 pts)</h4>
+<pre class="r"><code>head(Names)</code></pre>
+<pre><code>##   YEAR Gender RANK     Name Count
+## 1 2005 Female    1    EMILY  3268
+## 2 2005 Female    2   ASHLEY  2770
+## 3 2005 Female    3 SAMANTHA  2483
+## 4 2005 Female    4 ISABELLA  2333
+## 5 2005 Female    5      MIA  2172
+## 6 2005 Female    6  NATALIE  2035</code></pre>
+<pre class="r"><code>GOT %&gt;% group_by(FirstName) %&gt;% summarise(isPopular = n())</code></pre>
+<pre><code>## # A tibble: 1,441 x 2
+##    FirstName isPopular
+##    &lt;chr&gt;         &lt;int&gt;
+##  1 Abelar            1
+##  2 Addam             5
+##  3 Addison           1
+##  4 Aegon            12
+##  5 Aegor             1
+##  6 Aelinor           1
+##  7 Aemma             1
+##  8 Aemon             4
+##  9 Aemond            1
+## 10 Aenys             2
+## # … with 1,431 more rows</code></pre>
+<pre class="r"><code>names(GOT)[1] &lt;- &quot;name&quot;
+names(Names)[2] &lt;- &quot;name&quot;
+
+G_N &lt;- inner_join(GOT, Names, by = &quot;name&quot;)</code></pre>
+<pre><code>## Warning: Column `name` joining character vector and factor, coercing into
+## character vector</code></pre>
+<pre class="r"><code>combined &lt;- sort(union(levels(GOT$name), levels(Names$name)))
+n &lt;- inner_join(mutate(GOT, name = factor(name, levels = combined)), 
+    mutate(Names, name = factor(name, levels = combined)))</code></pre>
+</div>
+<div id="the-datasets-got-and-names-were-joined-using-the-dplyr-function.-initally-the-the-dataset-got-contained-both-first-and-last-name-in-one-column.-this-created-an-error-because-the-names-were-not-identical-for-the-variables-to-pair.-the-column-was-then-separated-into-first-and-last-names.-the-variable-firstname-of-got-was-merged-with-the-variable-name-of-the-dataset-names.-the-function-inner_join-was-used-to-return-the-all-rows-from-the-left-table-that-were-matching-in-the-right-table-as-well-as-all-common-multiples..-the-common-variable-for-each-dataset-is-based-on-name." class="section level4">
+<h4>The datasets ‘GOT’ and ‘Names’ were joined using the ‘dplyr’ function. Initally the the dataset ‘GOT’ contained both first and last name in one column. This created an error because the names were not identical for the variables to pair. The column was then separated into first and last names. The variable ‘FirstName’ of ‘GOT’ was merged with the variable ‘Name’ of the dataset ‘Names’. The function ‘inner_join’ was used to return the all rows from the left table that were matching in the right table, as well as all common multiples.. The common variable for each dataset is based on name.</h4>
+</div>
+<div id="wrangling-40-pts" class="section level4">
+<h4>3. Wrangling (40 pts)</h4>
+<pre class="r"><code>head(n %&gt;% filter(YearOfBirth == 2015) %&gt;% select(name, popularity) %&gt;% 
+    arrange(desc(popularity)), 6)</code></pre>
+<pre><code>## [1] name       popularity
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>n %&gt;% group_by(YEAR) %&gt;% mutate(popularity = min_rank(RANK)) %&gt;% 
+    summarize(mean(popularity, na.rm = T), n(), n_distinct(name))</code></pre>
+<pre><code>## # A tibble: 0 x 4
+## # … with 4 variables: YEAR &lt;int&gt;, `mean(popularity, na.rm = T)` &lt;dbl&gt;,
+## #   `n()` &lt;int&gt;, `n_distinct(name)` &lt;int&gt;</code></pre>
+<pre class="r"><code>n %&gt;% group_by(YEAR = 2015, name) %&gt;% summarize(count = n()) %&gt;% 
+    head(25)</code></pre>
+<pre><code>## Warning: Factor `name` contains implicit NA, consider using
+## `forcats::fct_explicit_na`</code></pre>
+<pre><code>## # A tibble: 1 x 3
+## # Groups:   YEAR [1]
+##    YEAR name  count
+##   &lt;dbl&gt; &lt;fct&gt; &lt;int&gt;
+## 1    NA &lt;NA&gt;      0</code></pre>
+<pre class="r"><code>n %&gt;% group_by(YEAR = 2015, name) %&gt;% summarize(count = n()) %&gt;% 
+    summarize(n_distinct(count)) %&gt;% head(25)</code></pre>
+<pre><code>## Warning: Factor `name` contains implicit NA, consider using
+## `forcats::fct_explicit_na`</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##    YEAR `n_distinct(count)`
+##   &lt;dbl&gt;               &lt;int&gt;
+## 1    NA                   1</code></pre>
+<pre class="r"><code>n %&gt;% group_by(YEAR = 2015, name) %&gt;% summarize(count = n()) %&gt;% 
+    ungroup() %&gt;% summarize(n_distinct(count)) %&gt;% head(25)</code></pre>
+<pre><code>## Warning: Factor `name` contains implicit NA, consider using
+## `forcats::fct_explicit_na`</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `n_distinct(count)`
+##                 &lt;int&gt;
+## 1                   1</code></pre>
+<pre class="r"><code>n %&gt;% summarize(mean_popularity = mean(popularity, na.rm = T), 
+    n_rows = n(), n_name = first(name))</code></pre>
+<pre><code>##   mean_popularity n_rows n_name
+## 1             NaN      0   &lt;NA&gt;</code></pre>
+<pre class="r"><code>n %&gt;% summarize(mean_male = mean(male, na.rm = T), n_rows = n(), 
+    n_name = median(popularity))</code></pre>
+<pre><code>##   mean_male n_rows n_name
+## 1       NaN      0     NA</code></pre>
+<pre class="r"><code>n %&gt;% group_by(name) %&gt;% summarize(mean_popularity = mean(popularity, 
+    na.rm = T), sd_popularity = sd(popularity, na.rm = T))</code></pre>
+<pre><code>## Warning: Factor `name` contains implicit NA, consider using
+## `forcats::fct_explicit_na`</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   name  mean_popularity sd_popularity
+##   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+## 1 &lt;NA&gt;              NaN            NA</code></pre>
+<pre class="r"><code>n %&gt;% group_by(YEAR) %&gt;% summarize(mean_popularity = mean(popularity, 
+    na.rm = T), sd_popularity = sd(popularity, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 0 x 3
+## # … with 3 variables: YEAR &lt;int&gt;, mean_popularity &lt;dbl&gt;, sd_popularity &lt;dbl&gt;</code></pre>
+<pre class="r"><code>glimpse(n)</code></pre>
+<pre><code>## Observations: 0
+## Variables: 9
+## $ name       &lt;fct&gt; 
+## $ LastName   &lt;chr&gt; 
+## $ male       &lt;int&gt; 
+## $ isPopular  &lt;int&gt; 
+## $ popularity &lt;dbl&gt; 
+## $ YEAR       &lt;int&gt; 
+## $ RANK       &lt;int&gt; 
+## $ Name       &lt;fct&gt; 
+## $ Count      &lt;int&gt;</code></pre>
+</div>
+<div id="we-can-filter-to-get-yearofbirth-selecting-name-and-popularity-then-sort-popularity-in-descending-order.-the-filter-will-return-rows-from-the-n-dataset-chosen-by-popularity.-the-variable-popularity-ranges-on-a-scale-from-0-to-1-with-1-being-the-most-popular.-using-the-select-function-the-variables-were-reordered-to-move-name-and-popularity-to-the-front-of-the-dataset.-as-a-result-we-can-see-that-the-top-three-names-in-oder-of-popularity-is-arya-jamie-and-jon.-the-function-mutate-was-used-on-the-dataset-n-to-observe-the-average-popularity-of-names-per-a-given-number.-as-a-result-the-name-arya-was-first.-using-the-summarize-function-we-can-see-that-by-taking-the-mean-popularity-there-is-distinct-number-of-names-for-a-given-year." class="section level4">
+<h4>We can filter to get ‘YearOfBirth’, selecting ’name’ and ‘popularity’ then sort ‘popularity’ in descending order. The filter() will return rows from the ’n’ dataset chosen by ‘popularity’. The variable ‘popularity’ ranges on a scale from 0 to 1, with 1 being the most popular. Using the select() function the variables were reordered to move ’name’ and ’popularity’ to the front of the dataset. As a result, we can see that the top three names in oder of popularity is Arya, Jamie and Jon. The function mutate() was used on the dataset ’n’ to observe the average popularity of names per a given number. As a result, the name ‘Arya’ was first. Using the summarize() function we can see that by taking the mean ‘Popularity’ there is distinct number of names for a given year.</h4>
+</div>
+<div id="using-the-group_by-function-along-with-the-summarize-function-we-can-group-categorical-variables-such-as-yearofbirth-with-name-and-summarize-the-number-of-names-with-the-countn-function-along-with-only-calling-for-25-names-for-a-given-year-using-the-head-function.-you-can-also-count-the-number-of-distinct-observations-within-the-count-column.-the-name-column-was-removed-but-not-yearofbirth.-as-a-result-we-can-see-in-2015-that-there-is-133-distinct-counts.-we-can-also-ungroup-which-will-remove-all-columns-except-the-distinct-count.-if-we-summarize-by-sex-and-name-we-get-a-distinct-count-of-222.-summarizing-mean-popularity-by-first-name-we-get-addison-with-n_rows-of-27880.-we-can-also-group-by-name-and-summarize-to-find-mean-and-standard-of-deviation-of-popularity-of-each-name.-we-can-also-summarize-by-mean-popularity-number-of-rows-using-n_rows-and-var-function.-as-a-result-there-are-27880-rows-with-a-mean-popularity-of-0.066." class="section level4">
+<h4>Using the ‘group_by()’ function along with the ‘summarize()’ function we can group categorical variables such as ‘YearOfBirth’ with ‘name’ and summarize the number of names with the ‘count=n()’ function along with only calling for 25 names for a given year using the ‘head()’ function. You can also count the number of distinct observations within the ‘count’ column. The ‘name’ column was removed but not ‘YearOfBirth’. As a result, we can see in 2015 that there is 133 distinct counts. We can also ‘ungroup’ which will remove all columns except the distinct count. If we summarize by ‘Sex’ and ‘name’ we get a distinct count of 222. Summarizing mean popularity by first name we get ‘Addison’ with n_rows of 27880. We can also group by ‘name’ and summarize to find mean and standard of deviation of popularity of each ‘name’. We can also summarize by mean popularity, number of rows using ’n_rows’ and ‘var()’ function. As a result there are 27880 rows with a mean popularity of 0.066.</h4>
+</div>
+<div id="visualizing-30-pts" class="section level4">
+<h4>4. Visualizing (30 pts)</h4>
+<pre class="r"><code>plot1 &lt;- ggplot(data = n, aes(x = male, y = popularity, color = popularity)) + 
+    geom_point()
+plot1</code></pre>
+<p><img src="../hugo-goa-demo/Project1_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot1 + ggtitle(&quot;Plot of Popularity by Males&quot;) + ylab(&quot;Popularity&quot;) + 
+    xlab(&quot;Male&quot;)</code></pre>
+<p><img src="../hugo-goa-demo/Project1_files/figure-html/unnamed-chunk-10-2.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="from-this-trend-we-can-see-that-that-there-is-a-slight-increase-of-popularity-for-male-names-as-compared-to-females-males.-this-dataset-indicates-male-by-the-number-1-and-female-by-the-number-0.-this-is-why-we-do-not-see-a-continuous-spread-but-a-frequency-on-either-side.-the-dataset-also-rates-popularity-on-a-scale-from-0-to-1.-the-popularity-is-dependent-on-the-the-name-male-or-female-and-the-gender-is-the-independent-variable." class="section level4">
+<h4>From this trend we can see that that there is a slight increase of popularity for male names as compared to females males. This dataset indicates male by the number 1 and female by the number 0. This is why we do not see a continuous spread but a frequency on either side. The dataset also rates popularity on a scale from 0 to 1. The popularity is dependent on the the name male or female and the gender is the independent variable.</h4>
+<pre class="r"><code>newdf &lt;- n[1:&quot;1050&quot;, ]
+
+plot2 &lt;- ggplot(data = newdf, aes(x = name, y = popularity, color = popularity)) + 
+    geom_point()
+plot2</code></pre>
+<pre><code>## Warning: Removed 1050 rows containing missing values (geom_point).</code></pre>
+<p><img src="../hugo-goa-demo/Project1_files/figure-html/unnamed-chunk-11-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot2 + ggtitle(&quot;Plot of Popularity by Name&quot;) + ylab(&quot;Popularity&quot;) + 
+    xlab(&quot;Name&quot;) + stat_summary(newdf = &quot;mean_name&quot;, colour = &quot;purple&quot;, 
+    size = 1)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: newdf</code></pre>
+<pre><code>## Warning: Removed 1050 rows containing non-finite values (stat_summary).</code></pre>
+<pre><code>## Warning: Removed 1050 rows containing missing values (geom_point).</code></pre>
+<p><img src="../hugo-goa-demo/Project1_files/figure-html/unnamed-chunk-11-2.png" width="768" style="display: block; margin: auto;" /> #### Since this dataset ‘n’ has 27880 different names, it was condensed to only reveal 1050 names and renamed to dataset, ‘newdf’. From this plot we can see that based on popularity, Addison is most popular out of the five names listed.</p>
+</div>
+<div id="dimensionality-reduction-20-pts" class="section level4">
+<h4>5. Dimensionality Reduction (20 pts)</h4>
+<pre class="r"><code>library(&quot;dplyr&quot;, lib.loc = &quot;/usr/local/lib/R/site-library&quot;)
+n_pca &lt;- Names %&gt;% dplyr::select(YEAR, Count)
+pc &lt;- princomp(na.omit(n_pca), cor = TRUE, scores = T)
+summary(pc, loadings = T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2
+## Standard deviation     1.1184127 0.8655362
+## Proportion of Variance 0.6254235 0.3745765
+## Cumulative Proportion  0.6254235 1.0000000
+## 
+## Loadings:
+##       Comp.1 Comp.2
+## YEAR  -0.707 -0.707
+## Count  0.707 -0.707</code></pre>
+<pre class="r"><code>plot(pc)</code></pre>
+<p><img src="../hugo-goa-demo/Project1_files/figure-html/unnamed-chunk-12-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>eigval &lt;- n_pca$sdev^2
+varprop = round(eigval/sum(eigval), 2)
+
+round(cumsum(eigval)/sum(eigval), 2)</code></pre>
+<pre><code>## numeric(0)</code></pre>
+<pre class="r"><code>eigval</code></pre>
+<pre><code>## numeric(0)</code></pre>
+<pre class="r"><code>biplot(pc)</code></pre>
+<p><img src="../hugo-goa-demo/Project1_files/figure-html/unnamed-chunk-12-2.png" width="768" style="display: block; margin: auto;" /> #### Component 1 had the highest proportion of variance at compared to Component 2. The data point are very concentrated due to the amount of variable in the dataset but that is show in the plot by the number of variations. The variable seem to be screwed left and pointing in opposite direction.</p>
+<pre><code>## R version 3.4.4 (2018-03-15)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.3 LTS
+## 
+## Matrix products: default
+## BLAS: /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+## LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] methods   stats     graphics  grDevices utils     datasets  base     
+## 
+## other attached packages:
+##  [1] forcats_0.4.0    stringr_1.4.0    dplyr_0.8.3      purrr_0.3.2     
+##  [5] readr_1.3.1      tidyr_1.0.0.9000 tibble_2.1.3     ggplot2_3.2.1   
+##  [9] tidyverse_1.2.1  knitr_1.26      
+## 
+## loaded via a namespace (and not attached):
+##  [1] tidyselect_0.2.5 xfun_0.11        haven_2.1.1      lattice_0.20-35 
+##  [5] colorspace_1.4-1 vctrs_0.2.0      generics_0.0.2   htmltools_0.3.6 
+##  [9] yaml_2.2.0       utf8_1.1.4       rlang_0.4.2      pillar_1.4.2    
+## [13] glue_1.3.1       withr_2.1.2      modelr_0.1.4     readxl_1.3.1    
+## [17] lifecycle_0.1.0  munsell_0.5.0    blogdown_0.17    gtable_0.3.0    
+## [21] cellranger_1.1.0 rvest_0.3.4      evaluate_0.14    fansi_0.4.0     
+## [25] broom_0.5.2      Rcpp_1.0.2       backports_1.1.5  scales_1.0.0    
+## [29] formatR_1.7      jsonlite_1.6     hms_0.5.0        digest_0.6.23   
+## [33] stringi_1.4.3    bookdown_0.16    grid_3.4.4       cli_2.0.0       
+## [37] tools_3.4.4      magrittr_1.5     lazyeval_0.2.2   crayon_1.3.4    
+## [41] pkgconfig_2.0.3  zeallot_0.1.0    ellipsis_0.3.0   xml2_1.2.2      
+## [45] lubridate_1.7.4  assertthat_0.2.1 rmarkdown_2.0    httr_1.4.0      
+## [49] rstudioapi_0.10  R6_2.4.1         nlme_3.1-131     compiler_3.4.4</code></pre>
+<pre><code>## [1] &quot;2019-12-15 22:05:39 CST&quot;</code></pre>
+<pre><code>##                                      sysname 
+##                                      &quot;Linux&quot; 
+##                                      release 
+##                          &quot;4.15.0-62-generic&quot; 
+##                                      version 
+## &quot;#69-Ubuntu SMP Wed Sep 4 20:55:53 UTC 2019&quot; 
+##                                     nodename 
+##                 &quot;educcomp01.ccbb.utexas.edu&quot; 
+##                                      machine 
+##                                     &quot;x86_64&quot; 
+##                                        login 
+##                                    &quot;unknown&quot; 
+##                                         user 
+##                                    &quot;cmb5726&quot; 
+##                               effective_user 
+##                                    &quot;cmb5726&quot;</code></pre>
+</div>
+</div>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-shenoybr-github-io-hugo-goa-demo" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="../hugo-goa/project2/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="../hugo-goa"></a></span>
+  
+  
+  <span><a class="menu-item" href="../hugo-goa/about/"> | next &gt;</a></span>
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="../hugo-goa">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2019. Christine Bandela. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.61.0</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+      <h6><a href="" aria-label="RSS Feed"><i class="fas fa-rss" aria-hidden="true"></i></a></h6>
+    
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'XYZ', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>
+
+

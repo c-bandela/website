@@ -1,0 +1,58 @@
+## Basic Configuration
+
+baseurl = "https://shenoybr.github.io/hugo-goa"
+builddrafts = false
+canonifyurls = false
+languageCode = "en-US"
+
+contentdir = "content"
+layoutdir = "layouts"
+publishdir = "public"
+
+author = "Christine Bandela"
+title = "Final Project"
+
+theme = "hugo-goa"
+
+## Hugo Built-in Features
+disqusShortname = "https-shenoybr-github-io-hugo-goa-demo" # Comment out to disable Disqus.
+googleAnalytics = "XYZ"
+enableRobotsTXT = true
+
+## Site Settings
+[params]
+author = "Christine Bandela"
+intro = "BSA in Biology "
+description = "Preschool teacher at West Austin Youth Association"
+authorimage = "IMG_3167.JPG" 
+dateformat = "Dec 15, 2019"
+
+## Site Meta Settings
+[params.meta]
+description = "Simple theme"
+keywords = "goa,hugo,teacher"
+
+## Social Accounts
+[params.social]
+github = "c-bandela"
+instagram = "miss_christine"
+facebook = "100005223769423"
+email = "christine.bandela@gmail.com"
+
+## Extras
+[params.extra]
+copyright = "© 2019. Christine Bandela. [Some Rights Reserved](http://creativecommons.org/licenses/by/3.0/)."
+poweredby = true
+highlightjs = true
+socialmarkup = true
+toc = true
+displayrssicon = true
+
+## Main Menu
+
+[[menu.main]]
+    name = "Projects"
+    identifier = "Projects"
+    weight = 200
+    url = "/Projects/"
+

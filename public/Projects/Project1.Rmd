@@ -1,0 +1,246 @@
+---
+title: "Project 1"
+author: "Christine"
+date: "10/14/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, message=FALSE, fig.width=8,tidy.opts=list(width.cutoff=60),tidy=TRUE)
+```
+
+## Christine Bandela cmb5726  
+
+#### 0. Introduction (4  pts)
+
+For this exploratory data analysis project I have chosen two datasets that I will use to compare and contrast betweeen Game of Thrones characters and thier infuence on baby names from 1880 to 2015. The dataset 'GOT'contains variables about the Game of Thrones characters including their first name, male, as well as, popularity. The 'Names' dataset contains variables including YearofBirth, Number, name and Sex. These datasets were acquired through the Kaggle and Data.world database. I found this area of study interesting because I am a fan of the show and I wanted to see which characters people named thier children after. Some questions I hope to answer would be, "Are the female names more popular than the males?" and "Which character is most popular out of all names?". I expect to see a larger count for  names of popular characters, such as Arya or Jon.
+
+#### 1. Tidying: Rearranging Wide/Long (8 pts)
+
+```{R}
+
+library("tidyverse")
+library("tidyr")
+
+library(dplyr)
+GOT <- read.csv("~/Website/Website/content/Projects/character-predictions_pose.csv")
+Names <- read.csv("~/Website/Website/content/Projects/top25babynames-by-sex-2005-2017.csv")
+
+head(GOT)
+GOT$S.No <- NULL
+GOT$plod <-NULL
+GOT$culture <- NULL
+GOT$dateOfBirth <- NULL
+GOT$DateoFdeath <- NULL
+GOT$mother <- NULL
+GOT$father <- NULL
+GOT$heir <- NULL
+GOT$spouse <- NULL
+GOT$isAlive  <- NULL
+GOT$boolDeadRelations <- NULL
+GOT$numDeadRelations <- NULL
+GOT$isNoble <- NULL
+GOT$isMarried <- NULL
+GOT$isAliveSpouse <- NULL
+GOT$isAliveHeir <- NULL
+GOT$isAliveFather <- NULL
+GOT$isAliveMother <- NULL
+GOT$book1 <- NULL
+GOT$book2 <- NULL
+GOT$book3 <- NULL
+GOT$book4 <- NULL
+GOT$book5 <- NULL
+GOT$title<- NULL
+GOT$house <-NULL
+GOT$LastName <- NULL
+GOT$age <- NULL
+
+
+GOT<- separate(GOT, name, c("FirstName", "LastName"))
+
+
+GOT2<- GOT %>%
+  filter(!is.na(FirstName)) %>%
+  group_by(male, FirstName) %>%
+  summarise(mean_isPopular = mean(isPopular,na.rm=TRUE))
+GOT2
+GOT2_wide <- GOT2 %>%
+  pivot_wider(names_from = FirstName, 
+              values_from = mean_isPopular) 
+GOT2_wide
+
+head(GOT2)
+
+```
+
+```{R}
+mean_name <- mean(GOT$FirstName)
+GOT2_long <- GOT2_wide %>%
+  pivot_longer(cols = mean_name , 
+               names_to = "male",
+               values_to = "isPopular")    
+
+GOT2_long
+```
+
+```{R}
+head(Names)
+Names2<- Names %>%
+  filter(!is.na(Name)) %>%
+  group_by(YEAR, Name) %>%
+  summarise(mean_Number = mean(RANK,na.rm=TRUE))
+Names2
+Names2_wide <- Names2 %>%
+  pivot_wider(names_from = Name, 
+              values_from = mean_Number)
+Names2_wide
+```
+
+```{R}
+
+
+mean_Name <- mean(Names$Name)
+
+Names2_long <- Names2_wide %>%
+  pivot_longer(cols = mean_Name, 
+               names_to = "YearofBirth",
+               values_to = "RANK")    
+
+Names2_long
+
+```
+#### The data imported was already tidy, however using the pivot_wider funtion we can 'untidy' the data to increasing the number of columns while, decreasing the number of rows. The selected columns used for analysis from the 'GOT' dataset were 'name', 'male', and 'popularity'. First the 'dplyr' function was used to construct a data frame that shows the mean popularity of each charater by name and male. Next using the 'tidyr' function, pivot_wider turned the charater popularity into columns. The two arguments 'names_from' and 'values_from' tell us how the the variables are being organized. The 'names_from' shows the output column name, such as 'male' and 'name'  and 'values_from' instructs from what column to get the value of the cells, in this case the column was 'isPopular'. 
+#### Now that the data is 'untidy' the function 'pivot_longer' can be used to transition from a wide format to a long format tidying the data. The number of rows will be increased while the number of colunms will decrease. There are three arguments used in combination with this function including, 'cols', 'names_to', and 'values_to'. The function 'cols' chooses which columns to transforms the dataset from wide long. The function 'names_to" shows the column name to store data from that column. The 'value_to' shows the column name to make the date from the values of the cell. As a result the variable of mean names, 'mean_names' was stored under the variable 'male'and categorized by 'isPopular'. 
+#### The same steps were followed to 'untidy' and 'tidy' the 'Names' dataset. The variables used from this dataset were 'Number', 'YearofBirth' and 'Name'. 
+
+#### 2. Joining/Merging (8 pts)
+
+```{R}
+head(Names)
+```
+
+```{R}
+GOT %>% 
+  group_by(FirstName) %>% 
+  summarise(isPopular = n())
+```
+```{R}
+
+names(GOT)[1]<-"name"
+names(Names)[2]<-"name"
+
+G_N <- inner_join(GOT,Names,by="name")
+
+
+
+combined <- sort(union(levels(GOT$name), levels(Names$name)))
+n <- inner_join(mutate(GOT, name=factor(name, levels=combined)),
+    mutate(Names, name=factor(name, levels=combined)))
+
+
+
+
+
+
+```
+
+#### The datasets 'GOT' and 'Names' were joined using the 'dplyr' function. Initally the the dataset 'GOT' contained both first and last name in one column. This created an error because the names were not identical for the variables to pair. The column was then separated into first and last names. The variable 'FirstName' of 'GOT' was merged with the variable 'Name' of the dataset 'Names'. The function 'inner_join' was used to return the all rows from the left table that were matching in the right table, as well as all common multiples.. The common variable for each dataset is based on name. 
+
+#### 3. Wrangling (40 pts)
+
+```{R}
+
+head(n %>% filter(YearOfBirth == 2015) %>% 
+  select(name, popularity) %>%
+  arrange(desc(popularity)), 6 )
+```
+
+```{R}
+n %>% 
+  group_by(YEAR) %>%
+  mutate(popularity=min_rank(RANK)) %>% 
+  summarize(mean(popularity, na.rm=T), n(), n_distinct(name))
+n %>% 
+  group_by(YEAR = 2015,name)%>%summarize(count=n())%>% head(25)
+n %>%
+  group_by(YEAR = 2015,name)%>%summarize(count=n())%>% 
+  summarize(n_distinct(count)) %>% head(25)
+n %>%
+  group_by(YEAR = 2015,name)%>%summarize(count=n())%>% 
+  ungroup() %>% summarize(n_distinct(count)) %>% head(25)
+
+n %>%
+ summarize(mean_popularity=mean(popularity, na.rm=T),
+                        n_rows=n(),
+                        n_name=first(name))
+n %>%
+ summarize(mean_male=mean(male, na.rm=T),
+                        n_rows=n(),
+                        n_name=median(popularity))
+n %>% 
+  group_by(name) %>%
+  summarize(mean_popularity=mean(popularity,na.rm=T), sd_popularity=sd(popularity, na.rm=T))
+
+n %>% 
+  group_by(YEAR) %>%
+  summarize(mean_popularity=mean(popularity,na.rm=T), sd_popularity=sd(popularity, na.rm=T))
+glimpse(n)
+```
+#### We can filter to get ‘YearOfBirth', selecting ’name’ and ‘popularity’ then sort ‘popularity’ in descending order. The filter() will return rows from the ’n’ dataset chosen by ‘popularity’. The variable ‘popularity’ ranges on a scale from 0 to 1, with 1 being the most popular. Using the select() function the variables were reordered to move ’name’ and ’popularity’ to the front of the dataset. As a result, we can see that the top three names in oder of popularity is Arya, Jamie and Jon. The function mutate() was used on the dataset ’n’ to observe the average popularity of names per a given number. As a result, the name ‘Arya’ was first.  Using the summarize() function we can see that by taking the mean ‘Popularity’ there is distinct number of names for a given year. 
+
+#### Using the ‘group_by()' function along with the ‘summarize()’ function we can group categorical variables such as ‘YearOfBirth’ with ‘name’ and summarize the number of names with the ‘count=n()’ function along with only calling for 25 names for a given year using the ‘head()’ function. You can also count the number of distinct observations within the ‘count’ column. The ‘name’ column was removed but not ‘YearOfBirth’. As a result, we can see in 2015 that there is 133 distinct counts. We can also ‘ungroup’ which will remove all columns except the distinct count. If we summarize by ‘Sex’ and ‘name’ we get a distinct count of 222. Summarizing mean popularity by first name we get ‘Addison’ with n_rows of 27880. We can also group by ‘name’ and summarize to find mean and standard of deviation of popularity of each ‘name’. We can also summarize by mean popularity, number of rows using ’n_rows’ and ‘var()’ function. As a result there are 27880 rows with a mean popularity of 0.066. 
+
+
+#### 4. Visualizing (30 pts)
+
+```{R}
+plot1<-ggplot(data = n, aes(x = male, y = popularity, color= popularity )) +
+  geom_point() 
+plot1
+
+plot1 + ggtitle("Plot of Popularity by Males") + ylab("Popularity") + xlab("Male") 
+```
+
+#### From this trend we can see that that there is a slight increase of popularity for male names as compared to females males. This dataset indicates male by the number 1 and female by the number 0. This is why we do not see a continuous spread but a frequency on either side. The dataset also rates popularity on a scale from 0 to 1. The popularity is dependent on the the name male or female and the gender is the independent variable. 
+
+
+```{R}
+newdf<-n[1:"1050",]
+
+plot2<-ggplot(data = newdf, aes(x = name, y = popularity, color= popularity))+geom_point()
+plot2
+
+plot2 + ggtitle("Plot of Popularity by Name") + ylab("Popularity") + xlab("Name") + stat_summary(newdf = "mean_name", colour = "purple", size = 1)
+
+
+```
+#### Since this dataset 'n' has 27880 different names, it was condensed to only reveal 1050 names and renamed to dataset, 'newdf'. From this plot we can see that based on popularity, Addison is most popular out of the five names listed. 
+
+#### 5. Dimensionality Reduction (20 pts) 
+
+
+```{R}
+library("dplyr", lib.loc="/usr/local/lib/R/site-library")
+n_pca <-Names %>% dplyr::select(YEAR, Count)
+pc <- princomp(na.omit(n_pca), cor = TRUE, scores = T)
+summary(pc, loadings=T)
+plot(pc)
+
+eigval<-n_pca$sdev^2 
+varprop=round(eigval/sum(eigval),2) 
+
+round(cumsum(eigval)/sum(eigval),2) 
+eigval
+biplot(pc)
+```
+#### Component 1 had the highest proportion of variance at compared to Component 2. The data point are very concentrated due to the amount of variable in the dataset but that is show in the plot by the number of variations. The variable seem to be screwed left and pointing in opposite direction. 
+
+```{R, echo=F}
+## DO NOT DELETE THIS BLOCK!
+sessionInfo()
+Sys.time()
+Sys.info()
+```
